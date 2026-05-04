@@ -8,6 +8,7 @@ from app.models.order import Order
 from app.models.user import User
 from typing import List
 import json
+from app.config import settings
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
@@ -37,7 +38,7 @@ def verify(
 @router.post("/webhook")
 async def razorpay_webhook(request: Request, db: Session = Depends(get_db)):
     payload = await request.body()
-    webhook_secret = "your_webhook_secret"  # Set in Razorpay dashboard
+    webhook_secret = settings.RAZORPAY_WEBHOOK_SECRET  # Set in Razorpay dashboard
 
     import hmac, hashlib
     signature = request.headers.get("x-razorpay-signature")

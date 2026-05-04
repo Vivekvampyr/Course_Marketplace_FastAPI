@@ -13,9 +13,11 @@ from app.config import settings
 router = APIRouter(prefix="/courses", tags=["Courses"])
 
 # ── List all published courses ─────────────────────────
+# Add to routers/courses.py GET "/" endpoint
 @router.get("/", response_model=List[CourseListResponse])
 def get_courses(
     category: Optional[str] = None,
+    search: Optional[str] = None,      # ← missing
     skip: int = 0,
     limit: int = 20,
     db: Session = Depends(get_db)
@@ -23,6 +25,8 @@ def get_courses(
     query = db.query(Course).filter(Course.is_published == True)
     if category:
         query = query.filter(Course.category == category)
+    if search:
+        query = query.filter(Course.title.ilike(f"%{search}%"))  # ← missing
     return query.offset(skip).limit(limit).all()
 
 # ── Get single course ──────────────────────────────────
