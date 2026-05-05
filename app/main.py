@@ -1,3 +1,5 @@
+# run this command to start the server: uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
