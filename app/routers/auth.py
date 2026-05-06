@@ -5,6 +5,8 @@ from authlib.integrations.starlette_client import OAuth
 from starlette.config import Config
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
+from fastapi.security import OAuth2PasswordRequestForm
+
 import httpx
 
 from app.database import get_db
@@ -40,9 +42,20 @@ def register(data: UserRegister, db: Session = Depends(get_db)):
 
 # ── Login ──────────────────────────────────────────────
 @router.post("/login", response_model=TokenResponse)
-def login(data: UserLogin, db: Session = Depends(get_db)):
-    access_token, refresh_token, user = login_user(data.email, data.password, db)
-    return TokenResponse(access_token=access_token, refresh_token=refresh_token, user=user)
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    access_token, refresh_token, user = login_user(
+        form_data.username,
+        form_data.password,
+        db
+    )
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=refresh_token,
+        user=user
+    )
 
 # ── Refresh Token ──────────────────────────────────────
 @router.post("/refresh")

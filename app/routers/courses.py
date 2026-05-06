@@ -54,6 +54,7 @@ async def create_course(
     category: Optional[str] = Form(None),
     level: str = Form("beginner"),
     thumbnail: Optional[UploadFile] = File(None),
+    is_published: bool = Form(False),
     current_user: User = Depends(require_instructor),
     db: Session = Depends(get_db)
 ):
@@ -63,7 +64,8 @@ async def create_course(
         price=price,
         category=category,
         level=level,
-        instructor_id=current_user.id
+        instructor_id=current_user.id,
+        is_published=is_published
     )
     db.add(course)
     db.commit()
