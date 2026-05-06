@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, Request, HTTPException, Response
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app.schemas.order import RazorpayOrderResponse, PaymentVerifyRequest, OrderResponse
@@ -15,9 +15,11 @@ router = APIRouter(prefix="/payments", tags=["Payments"])
 # ── Create Razorpay order from cart ───────────────────
 @router.post("/create-order", response_model=RazorpayOrderResponse)
 def create_order(
+    response: Response,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    response.headers["Access-Control-Allow-Origin"] = "*"
     return create_razorpay_order(current_user.id, db)
 
 # ── Verify payment after Razorpay checkout ────────────
